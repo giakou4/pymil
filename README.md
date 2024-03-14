@@ -1,4 +1,4 @@
-# PySSL
+# PyMIL
 
 A PyTorch implementation of Self-Supervised Learning (SSL) methods
 
