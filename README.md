@@ -29,3 +29,19 @@ pip install -r requirements.txt
 ## 2. Methods
 
 TBD
+
+### 2.1 Attention
+
+TBD
+
+### 2.2 Gated Attention
+
+TBD
+
+### 2.3 Mean-operation
+
+TBD
+
+### 2.4 Max-operation
+
+TBD
