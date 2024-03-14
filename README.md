@@ -28,7 +28,19 @@ pip install -r requirements.txt
 
 ## 2. Methods
 
-TBD
+The MIL method implementation was based on [AMLab](https://github.com/AMLab-Amsterdam/AttentionDeepMIL) implementation of [Attention-based Deep Multiple Instance Learning](https://arxiv.org/abs/1802.04712).
+
+For the following section, assume a backbone, e.g., a ResNet-50, and an input image of size 28 (we converted the grayscale images of MNIST to RGB for demonstration) in a bag of random size (e.g., 10) of batch size 1, i.e.,
+
+```python
+import torchvision
+
+backbone = torchvision.models.resnet50(pretrained=False)
+feature_size = backbone.fc.in_features
+backbone.fc = torch.nn.Identity()
+
+x = torch.rand(1, 10, 3, 28, 28) # batch_size x bag_size x channels x height x width
+```
 
 ### 2.1 Attention
 
