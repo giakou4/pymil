@@ -1,0 +1,10 @@
+abstract: A PyTorch implementation of Multiple Instance Learning (MIL) methods
+authors:
+  - family-names: Giakoumoglou
+    given-names: Nikolaos
+date-released: "2024-14-3"
+license: MIT
+message: If you use this software, please cite it using these metadata.
+repository-code: "https://github.com/giakou4/pymil"
+title: PyMIL
+version: 0.0.1
