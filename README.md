@@ -152,7 +152,7 @@ In Bibtex format:
 
 ```bibtex
 @misc{pymil2024giakoumoglou,
-   author = {Nikolaos Giakoumoglou and Paschalis Giakoumoglou},
+   author = {Nikolaos Giakoumoglou},
    title = {PyMIL: A PyTorch implementation of Multiple Instance Learning (MIL) methods},
    year = {2024},
    publisher = {GitHub},
