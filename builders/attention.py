@@ -9,25 +9,25 @@ class Attention(nn.Module):
     Link: https://arxiv.org/abs/1802.04712
     Implementation: https://github.com/AMLab-Amsterdam/AttentionDeepMIL
     """
-    def __init__(self, backbone, feature_size, L=500, D=128, K=1):
+    def __init__(self, backbone, feature_size, M=500, L=128, ATTENTION_BRANCHES=1):
         super().__init__()
-        self.L = L
-        self.D = D
-        self.K = K # attention branches
+        self.M = 500
+        self.L = 128
+        self.ATTENTION_BRANCHES = 1
         self.feature_size = feature_size
 
         self.backbone = backbone
         self.projector = nn.Sequential(
-            nn.Linear(feature_size, self.L),
+            nn.Linear(feature_size, self.M),
             nn.ReLU(),
             )
         self.attention = nn.Sequential(
-            nn.Linear(self.L, self.D), # matrix V
+            nn.Linear(self.M, self.L), # matrix V
             nn.Tanh(),
-            nn.Linear(self.D, self.K), # matrix W
+            nn.Linear(self.L, self.ATTENTION_BRANCHES), # matrix W
             )
         self.classifier = nn.Sequential(
-            nn.Linear(self.L*self.K, 1),
+            nn.Linear(self.M*self.ATTENTION_BRANCHES, 1),
             nn.Sigmoid(),
             )
 
@@ -36,13 +36,13 @@ class Attention(nn.Module):
 
         h = self.backbone(x)
         h = h.view(-1, self.feature_size)
-        h = self.projector(h)  # [b x L]
+        h = self.projector(h)  # [K x M]
 
-        a = self.attention(h)  # [b x K]
-        a = torch.transpose(a, 1, 0)  # [K x b]
-        a = F.softmax(a, dim=1)  # softmax over b
+        a = self.attention(h)  # [K x ATTENTION_BRANCHES]
+        a = torch.transpose(a, 1, 0)  # [ATTENTION_BRANCHES x K]
+        a = F.softmax(a, dim=1)  # softmax over K
             
-        z = torch.mm(a, h)  # [K x L]
+        z = torch.mm(a, h)  # [ATTENTION_BRANCHES x M]
 
         y = self.classifier(z)
         return y
