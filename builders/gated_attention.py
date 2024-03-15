@@ -9,29 +9,29 @@ class GatedAttention(nn.Module):
     Link: https://arxiv.org/abs/1802.04712
     Implementation: https://github.com/AMLab-Amsterdam/AttentionDeepMIL
     """
-    def __init__(self, backbone, feature_size, L=500, D=128, K=1):
+    def __init__(self, backbone, feature_size, M=500, L=128, ATTENTION_BRANCHES=1):
         super().__init__()
-        self.L = L
-        self.D = D
-        self.K = K
+        self.M = 500
+        self.L = 128
+        self.ATTENTION_BRANCHES = 1
         self.feature_size = feature_size
 
         self.backbone = backbone
         self.projector = nn.Sequential(
-            nn.Linear(feature_size, self.L),
+            nn.Linear(feature_size, self.M),
             nn.ReLU(),
             )
         self.attention_V = nn.Sequential(
-            nn.Linear(self.L, self.D), # matrix V
+            nn.Linear(self.M, self.L), # matrix V
             nn.Tanh(),
             )
         self.attention_U = nn.Sequential(
-            nn.Linear(self.L, self.D), # matrix U
+            nn.Linear(self.M, self.L), # matrix U
             nn.Sigmoid(),
             )
-        self.attention_weights = nn.Linear(self.D, self.K) # martix W
+        self.attention_weights = nn.Linear(self.L, self.ATTENTION_BRANCHES) # martix W
         self.classifier = nn.Sequential(
-            nn.Linear(self.L*self.K, 1),
+            nn.Linear(self.M*self.ATTENTION_BRANCHES, 1),
             nn.Sigmoid(),
             )
 
@@ -40,15 +40,15 @@ class GatedAttention(nn.Module):
 
         h = self.backbone(x)
         h = h.view(-1, self.feature_size)
-        h = self.projector(h)  # [b x L]
+        h = self.projector(h)  # [b x M]
 
-        a_V = self.attention_V(h)  # [b x D]
-        a_U = self.attention_U(h)  # [b x D]
-        a = self.attention_weights(a_V * a_U) # element wise multiplication -> [b x K]
-        a = torch.transpose(a, 1, 0)  # [K x b]
+        a_V = self.attention_V(h)  # [b x L]
+        a_U = self.attention_U(h)  # [b x L]
+        a = self.attention_weights(a_V * a_U) # element wise multiplication -> [b x ATTENTION_BRANCHES]
+        a = torch.transpose(a, 1, 0)  # [ATTENTION_BRANCHES x b]
         a = F.softmax(a, dim=1)  # softmax over b
 
-        z = torch.mm(a, h)  # [K x L]
+        z = torch.mm(a, h)  # [ATTENTION_BRANCHES x M]
 
         y = self.classifier(z)
         return y
