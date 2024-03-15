@@ -36,11 +36,11 @@ class Attention(nn.Module):
 
         h = self.backbone(x)
         h = h.view(-1, self.feature_size)
-        h = self.projector(h)  # [K x M]
+        h = self.projector(h)  # [b x M]
 
-        a = self.attention(h)  # [K x ATTENTION_BRANCHES]
-        a = torch.transpose(a, 1, 0)  # [ATTENTION_BRANCHES x K]
-        a = F.softmax(a, dim=1)  # softmax over K
+        a = self.attention(h)  # [b x ATTENTION_BRANCHES]
+        a = torch.transpose(a, 1, 0)  # [ATTENTION_BRANCHES x b]
+        a = F.softmax(a, dim=1)  # softmax over b
             
         z = torch.mm(a, h)  # [ATTENTION_BRANCHES x M]
 
